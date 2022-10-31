@@ -5,7 +5,8 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import albumentations as albu
 from albumentations.pytorch.transforms import ToTensorV2
-from torchvision.transforms import Compose, RandomHorizontalFlip, RandomVerticalFlip, ToTensor, Normalize, RandomRotation, RandomAutocontrast, RandAugment
+from torchvision.transforms import Compose, RandomHorizontalFlip, RandomVerticalFlip, \
+    ToTensor, Normalize, RandomRotation, RandomAutocontrast, RandAugment, CenterCrop, Resize
 from PIL import Image, ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -24,9 +25,11 @@ class PEDataset(Dataset):
             #     ToTensorV2()
             #     ])
             self.transform = Compose([
+                CenterCrop((190,190)),
+                Resize((256,256)),
                 RandomVerticalFlip(p=0.5),
                 RandomHorizontalFlip(p=0.5),
-                RandAugment(num_ops=5),
+                RandAugment(num_ops=3),
                 ToTensor(),
                 Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
             ])
@@ -36,6 +39,8 @@ class PEDataset(Dataset):
             #     ToTensorV2(),
             # ])
             self.transform = Compose([
+                CenterCrop((190,190)),
+                Resize((256,256)),
                 ToTensor(),
                 Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
             ])
@@ -53,7 +58,7 @@ class PEDataset(Dataset):
         image = self.transform(image)
         # except:
         #     image = ToTensor()(image)
-        label = torch.Tensor([self.labels[index]]).float()
+        label = torch.Tensor([self.labels[index]])
         return image, label
     
             
